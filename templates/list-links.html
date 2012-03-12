@@ -1,0 +1,7 @@
+{% extends "import-export.html" %}
+
+{% block the_form %} 
+    <a href={% url export_database %}> Export database </a> <br>
+    <a href={% url import_database %}> Import database </a> <br>
+    <a href={% url export_mediaroot %}> Export media directory </a> <br>
+{% endblock %}

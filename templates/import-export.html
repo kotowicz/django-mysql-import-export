@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% load adminmedia i18n %}
+{% block title %}{{ action_name }}{% endblock %}
+ 
+{% if not is_popup %}{% block breadcrumbs %}<div class="breadcrumbs"><a href="/admin/">{% trans "Home" %}</a> &rsaquo; <a href={% url index_importexport %}>Import-Export</a>
+{% block subaction %} {% endblock %} &nbsp;&nbsp;&nbsp; &lsaquo; <a id="logout" href="/admin/logout">logout</a> </div>{% endblock %}{% endif %}
+
+ 
+    {% block content %}
+        <div id="content-main">
+        <h1>{{ action_name }}</h1>
+            {% block the_form %} {% endblock %}
+        </div>
+    {% endblock %}

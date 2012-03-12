@@ -1,0 +1,10 @@
+{% extends "import-export.html" %}
+
+{% block subaction %}  &rsaquo; {{ action_name }} {% endblock %}
+
+{% block the_form %} 
+        <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Import" />
+        </form>
+{% endblock %}

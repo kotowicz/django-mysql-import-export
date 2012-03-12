@@ -1,0 +1,11 @@
+{% extends "import-export.html" %}
+
+{% block subaction %}  &rsaquo; {{ action_name }} {% endblock %}
+
+{% block the_form %} 
+        <form name="export-database" action="" method="post" >{% csrf_token %}
+            <input type="hidden" name="exportdb" value="true" />
+            <input type="submit" value="Export" />
+        </form>
+{% endblock %}
+

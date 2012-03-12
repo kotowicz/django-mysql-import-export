@@ -6,7 +6,7 @@ This is version 0.1 of my simple django mysql import / export app.
 
 * clone this directory and rename it to 'importexport'
 * configure settings.py file
-** add application to `INSTALLED_APPS`
+  * add application to `INSTALLED_APPS`
 
 ```
 INSTALLED_APPS = (
@@ -15,7 +15,7 @@ INSTALLED_APPS = (
 )
 ```
 
-** set path to mysqldump program:
+  * set path to mysqldump program:
 
 ```
 MYSQLDUMP = "/usr/local/bin/mysqldump"

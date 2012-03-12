@@ -1,8 +1,12 @@
-# 0) this is version 0.1 of my django mysql import / export app.
+# A) ABOUT
 
-# 1) clone this directory and rename it to 'importexport'
+This is version 0.1 of my simple django mysql import / export app. 
 
-# 2) configure settings.py file:
+# B) SETUP
+
+* clone this directory and rename it to 'importexport'
+* configure settings.py file
+** add application to `INSTALLED_APPS`
 
 ```
 INSTALLED_APPS = (
@@ -11,13 +15,13 @@ INSTALLED_APPS = (
 )
 ```
 
-# path to mysqldump program?
+** set path to mysqldump program:
 
 ```
 MYSQLDUMP = "/usr/local/bin/mysqldump"
 ```
 
-# 3) configure urls.py file:
+* configure urls.py file:
 
 ```
 urlpatterns += patterns('',
@@ -26,3 +30,4 @@ urlpatterns += patterns('',
     (r'^admin/', include(admin.site.urls)),
 )
 ```
+

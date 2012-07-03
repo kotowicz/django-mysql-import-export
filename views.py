@@ -1,5 +1,8 @@
 import os
 from datetime import date
+import logging
+
+from django.db import connection
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.exceptions import ImproperlyConfigured
@@ -116,7 +119,6 @@ def handle_uploaded_file(f, local_settings):
 
     try:
         import bz2
-        import logging
 
         # prepare data for raw mysql execution
         data = f.read()
@@ -133,21 +135,35 @@ def handle_uploaded_file(f, local_settings):
         from django.core import management 
         management.call_command('syncdb', interactive=False)
 
-        # import all data
-        from django.db import connection
-        cursor = connection.cursor()        
-
+        ### start - import all data
         try:
+
+            cursor = create_cursor()
+            # disable foreign key checking, in order to prevent the following error:
+            # 'Cannot delete or update a parent row: a foreign key constraint fails' 
+            cursor.execute('SET FOREIGN_KEY_CHECKS=0')
             cursor.execute(plain_data)
-            if cursor:
-                cursor.close()
-                connection.close()
+            close_cursor(cursor)
+
+            # I've closed the cursor and will open a new one, in order to prevent 
+            # the following error:
+            # 'Commands out of sync; you can't run this command now'
+            cursor = create_cursor()
+            cursor.execute('SET FOREIGN_KEY_CHECKS=1')
+            close_cursor(cursor)
+
                 
             logging.debug('... Finished import successfully.')
+            print '\t ... Finished import successfully.'
             
         except Exception, details:
-            logging.debug('error %s' % details)
+            # recreate all tables in case of error - we don't want to end up with
+            # missing tables.
+            management.call_command('syncdb', interactive=False)
+            logging.debug('\t error while importing data: %s' % details)
+            print '\t error while importing data: %s' % details
             raise
+        ### end - import all data
 
     except:
         return HttpResponse("Ups, something went wrong. You are probably missing 'bz2'.")        
@@ -156,17 +172,19 @@ def handle_uploaded_file(f, local_settings):
 
 def flush_db_tables(database_name):
 
-    from django.db import connection
-    cursor = connection.cursor()
+    try:
 
-    all_tables =  connection.introspection.table_names()
-    for table in all_tables:
-        cursor.execute("use %s" % database_name)
-        cursor.execute("drop table %s" % table)
+        cursor = create_cursor()
 
-    if cursor: 
-        cursor.close() 
-        connection.close()      
+        # we drop and re-create the database, since the permissions will not be affected.
+        cursor.execute("drop database %s" % database_name)
+        cursor.execute("create database %s" % database_name)
+
+        close_cursor(cursor)
+
+    except Exception, details:
+        logging.debug('error while dropping and re-creating database: %s' % details)
+        raise
 
 
 ################################################################################
@@ -195,4 +213,14 @@ def dump_database(local_settings):
     except:
         return HttpResponse("Ups, something went wrong. You are probably missing 'bz2'.")
     
+
+def create_cursor():
+    return connection.cursor()
+
+
+def close_cursor(cursor):
+    if cursor:
+        cursor.close()
+        connection.close()
+
 

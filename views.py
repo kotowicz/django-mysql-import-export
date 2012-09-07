@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import datetime
 import logging
 
 from django.db import connection
@@ -52,7 +52,7 @@ def export_media(request):
         stdin, stdout = os.popen2('tar -cf - %s' % settings.MEDIA_ROOT)
         stdin.close()
         response = HttpResponse(stdout, mimetype="application/octet-stream")
-        response['Content-Disposition'] = 'attachment; filename=%s' % date.today().__str__()+'_media.tar'
+        response['Content-Disposition'] = 'attachment; filename=%s' % datetime.now().__str__()+'_media.tar'
         return response
     return render_to_response('export.html', {'action_name': 'Export Media Root',}, context_instance=RequestContext(request))
 
@@ -207,7 +207,7 @@ def dump_database(local_settings):
     
         # create the response in form of an attachment
         response = HttpResponse(compressed_data, mimetype="application/octet-stream")
-        response['Content-Disposition'] = 'attachment; filename=%s' % 'django_' + date.today().__str__()+'_db.sql.bz2'
+        response['Content-Disposition'] = 'attachment; filename=%s' % 'django_' + datetime.now().__str__()+'_db.sql.bz2'
 
         return response
     except:
